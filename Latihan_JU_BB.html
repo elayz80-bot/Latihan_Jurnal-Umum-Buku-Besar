@@ -1,0 +1,1266 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Latihan Jurnal Umum Perusahaan Jasa</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .journal-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        .journal-table th,
+        .journal-table td {
+            border: 1px solid #d1d5db;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .journal-table th {
+            background-color: #f3f4f6;
+            font-weight: bold;
+        }
+        
+        .debit-input {
+            background-color: #fef3c7;
+        }
+        
+        .credit-input {
+            background-color: #dcfce7;
+        }
+        
+        .correct-answer {
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+        }
+        
+        .incorrect-answer {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full bg-gray-50 font-sans">
+  <div class="min-h-full"><!-- Header -->
+   <header class="gradient-bg text-white py-8">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+     <h1 id="app-title" class="text-4xl md:text-5xl font-bold mb-4">Latihan Jurnal Umum Perusahaan Jasa</h1>
+     <p class="text-xl md:text-2xl opacity-90">30 Soal Transaksi dengan Jurnal dan Buku Besar</p>
+     <p id="company-name" class="text-lg opacity-80 mt-2">CV. Maju Bersama</p>
+    </div>
+   </header><!-- Navigation -->
+   <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4">
+     <div class="flex justify-center space-x-4 py-4 flex-wrap"><button onclick="showSection('daftar')" class="nav-btn px-4 py-2 rounded-full bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors mb-2"> Daftar Soal </button> <button onclick="showSection('latihan')" class="nav-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors mb-2"> Latihan </button> <button onclick="showSection('progress')" class="nav-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors mb-2"> Progress </button> <button onclick="showSection('panduan')" class="nav-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition-colors mb-2"> Panduan </button>
+     </div>
+    </div>
+   </nav><!-- Main Content -->
+   <main class="max-w-7xl mx-auto px-4 py-8"><!-- Section: Daftar Soal -->
+    <section id="daftar-section" class="section-content">
+     <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">Daftar 30 Soal Transaksi</h2>
+      <p class="text-lg text-gray-600">Pilih soal untuk mulai berlatih jurnal umum dan buku besar</p>
+     </div>
+     <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4" id="soal-grid"><!-- Soal cards will be generated here -->
+     </div>
+    </section><!-- Section: Latihan -->
+    <section id="latihan-section" class="section-content hidden">
+     <div id="soal-container" class="bg-white rounded-xl shadow-lg p-6">
+      <div class="flex justify-between items-center mb-6">
+       <h2 class="text-2xl font-bold text-gray-800">Soal <span id="current-soal-number">1</span></h2>
+       <div class="flex space-x-2"><button onclick="previousSoal()" id="prev-soal-btn" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 disabled:opacity-50"> ← Sebelumnya </button> <button onclick="nextSoal()" id="next-soal-btn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"> Selanjutnya → </button>
+       </div>
+      </div><!-- Soal Content -->
+      <div class="mb-8">
+       <div class="bg-blue-50 rounded-lg p-6 mb-6">
+        <h3 class="font-bold text-lg mb-3 text-blue-800">Transaksi:</h3>
+        <p id="soal-text" class="text-gray-800 text-lg leading-relaxed"></p>
+       </div>
+      </div><!-- Jurnal Umum -->
+      <div class="mb-8">
+       <h3 class="text-xl font-bold text-gray-800 mb-4">📝 Jurnal Umum</h3>
+       <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+        <div class="flex">
+         <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-yellow-400" viewbox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+         </div>
+         <div class="ml-3">
+          <p class="text-sm text-yellow-700"><strong>Format Jurnal:</strong> Setiap transaksi membutuhkan minimal 2 baris - baris pertama untuk akun yang di-debit, baris kedua untuk akun yang di-kredit (dengan indentasi).</p>
+         </div>
+        </div>
+       </div>
+       <div class="overflow-x-auto">
+        <table class="journal-table w-full">
+         <thead>
+          <tr>
+           <th class="w-20">Tanggal</th>
+           <th class="w-40">Akun</th>
+           <th class="w-20">Ref</th>
+           <th class="w-32">Debit (Rp)</th>
+           <th class="w-32">Kredit (Rp)</th>
+          </tr>
+         </thead>
+         <tbody id="journal-entries"><!-- Journal entries will be generated here -->
+         </tbody>
+        </table>
+       </div>
+       <div class="mt-4 flex justify-between items-center"><button onclick="addJournalEntry()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"> + Tambah Baris </button> <button onclick="checkJournal()" class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 font-semibold"> Periksa Jurnal </button>
+       </div>
+      </div><!-- Buku Besar -->
+      <div class="mb-8" id="ledger-section" style="display: none;">
+       <h3 class="text-xl font-bold text-gray-800 mb-4">📚 Buku Besar</h3>
+       <div id="ledger-accounts" class="grid md:grid-cols-2 gap-6"><!-- Ledger accounts will be generated here -->
+       </div>
+       <div class="mt-4 text-center"><button onclick="checkLedger()" class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold"> Periksa Buku Besar </button>
+       </div>
+      </div><!-- Hasil -->
+      <div id="result-section" class="hidden">
+       <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">📊 Hasil Penilaian</h3>
+        <div id="score-display" class="text-center mb-4">
+         <div class="text-4xl font-bold text-blue-600 mb-2"><span id="total-score">0</span>/100
+         </div>
+         <p class="text-gray-600">Skor Total</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4 mb-4">
+         <div class="text-center">
+          <div class="text-2xl font-bold text-green-600" id="journal-score">
+           0
+          </div>
+          <p class="text-sm text-gray-600">Skor Jurnal</p>
+         </div>
+         <div class="text-center">
+          <div class="text-2xl font-bold text-purple-600" id="ledger-score">
+           0
+          </div>
+          <p class="text-sm text-gray-600">Skor Buku Besar</p>
+         </div>
+        </div>
+        <div class="flex justify-center space-x-4"><button onclick="saveProgress()" class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"> <span class="loading-indicator" style="display: none;">
+           <div class="loading-spinner"></div></span> Simpan Progress </button> <button onclick="resetSoal()" class="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"> Reset Soal </button>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- Section: Progress -->
+    <section id="progress-section" class="section-content hidden">
+     <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">Progress Pembelajaran</h2>
+      <p class="text-lg text-gray-600">Lihat kemajuan latihan Anda</p>
+     </div>
+     <div class="grid md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+       <div class="text-4xl font-bold text-blue-600 mb-2" id="completed-count">
+        0
+       </div>
+       <p class="text-gray-600">Soal Selesai</p>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+       <div class="text-4xl font-bold text-green-600 mb-2" id="average-score">
+        0
+       </div>
+       <p class="text-gray-600">Rata-rata Skor</p>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+       <div class="text-4xl font-bold text-purple-600 mb-2" id="total-time">
+        0
+       </div>
+       <p class="text-gray-600">Total Waktu (menit)</p>
+      </div>
+     </div>
+     <div class="bg-white rounded-xl shadow-lg p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Detail Progress</h3>
+      <div class="overflow-x-auto">
+       <table class="w-full">
+        <thead>
+         <tr class="bg-gray-50">
+          <th class="px-4 py-2 text-left">Soal</th>
+          <th class="px-4 py-2 text-left">Status</th>
+          <th class="px-4 py-2 text-left">Skor</th>
+          <th class="px-4 py-2 text-left">Waktu</th>
+          <th class="px-4 py-2 text-left">Aksi</th>
+         </tr>
+        </thead>
+        <tbody id="progress-table"><!-- Progress data will be loaded here -->
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </section><!-- Section: Panduan -->
+    <section id="panduan-section" class="section-content hidden">
+     <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">Panduan Penggunaan</h2>
+      <p class="text-lg text-gray-600">Cara menggunakan aplikasi latihan jurnal</p>
+     </div>
+     <div class="grid md:grid-cols-2 gap-8">
+      <div class="bg-white rounded-xl p-6 shadow-lg">
+       <h3 class="text-xl font-bold text-blue-600 mb-4">📝 Cara Mengisi Jurnal</h3>
+       <ul class="space-y-3 text-gray-700">
+        <li class="flex items-start"><span class="text-blue-500 mr-2">1.</span> Baca transaksi dengan teliti</li>
+        <li class="flex items-start"><span class="text-blue-500 mr-2">2.</span> Identifikasi akun yang terpengaruh (minimal 2 akun)</li>
+        <li class="flex items-start"><span class="text-blue-500 mr-2">3.</span> <strong>Baris 1:</strong> Tulis akun yang di-debit dengan nominalnya</li>
+        <li class="flex items-start"><span class="text-blue-500 mr-2">4.</span> <strong>Baris 2:</strong> Tulis akun yang di-kredit (dengan indentasi) dan nominalnya</li>
+        <li class="flex items-start"><span class="text-blue-500 mr-2">5.</span> Pastikan total debit = total kredit</li>
+        <li class="flex items-start"><span class="text-blue-500 mr-2">6.</span> Contoh: Beli kendaraan Rp 25.000.000 kredit 
+         <div class="ml-6 mt-2 text-sm bg-gray-100 p-2 rounded">
+          Baris 1: Kendaraan (Debit: 25.000.000)<br>
+           Baris 2: &nbsp;&nbsp;&nbsp;&nbsp;Utang Bank (Kredit: 25.000.000)
+         </div></li>
+       </ul>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-lg">
+       <h3 class="text-xl font-bold text-green-600 mb-4">📚 Cara Posting ke Buku Besar</h3>
+       <ul class="space-y-3 text-gray-700">
+        <li class="flex items-start"><span class="text-green-500 mr-2">1.</span> Ambil data dari jurnal yang sudah benar</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">2.</span> Posting ke akun yang sesuai</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">3.</span> Debit di jurnal → Debit di buku besar</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">4.</span> Kredit di jurnal → Kredit di buku besar</li>
+        <li class="flex items-start"><span class="text-green-500 mr-2">5.</span> Hitung saldo akhir setiap akun</li>
+       </ul>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-lg">
+       <h3 class="text-xl font-bold text-purple-600 mb-4">🎯 Tips Sukses</h3>
+       <ul class="space-y-3 text-gray-700">
+        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Pahami saldo normal setiap jenis akun</li>
+        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Aset dan Beban = saldo normal Debit</li>
+        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Utang, Modal, Pendapatan = saldo normal Kredit</li>
+        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Selalu periksa keseimbangan debit-kredit</li>
+        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Latihan rutin untuk meningkatkan kemampuan</li>
+       </ul>
+      </div>
+      <div class="bg-white rounded-xl p-6 shadow-lg">
+       <h3 class="text-xl font-bold text-red-600 mb-4">⚠️ Hal yang Perlu Diperhatikan</h3>
+       <ul class="space-y-3 text-gray-700">
+        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Gunakan format angka tanpa titik/koma</li>
+        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Contoh: 1000000 (bukan 1.000.000)</li>
+        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Nama akun harus sesuai dengan standar</li>
+        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Simpan progress secara berkala</li>
+        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Periksa jawaban sebelum melanjutkan</li>
+       </ul>
+      </div>
+     </div>
+    </section>
+   </main><!-- Footer -->
+   <footer class="bg-gray-800 text-white py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+     <p id="footer-text" class="text-lg">Aplikasi Pembelajaran Akuntansi - Jurnal Umum dan Buku Besar</p>
+     <p class="text-gray-400 mt-2">© 2024 - Sistem Pembelajaran Interaktif</p>
+    </div>
+   </footer>
+  </div>
+  <script>
+        // Configuration object
+        const defaultConfig = {
+            app_title: "Latihan Jurnal Umum Perusahaan Jasa",
+            company_name: "CV. Maju Bersama",
+            footer_text: "Aplikasi Pembelajaran Akuntansi - Jurnal Umum dan Buku Besar",
+            primary_color: "#3B82F6",
+            secondary_color: "#10B981"
+        };
+
+        // Global variables
+        let currentSoalIndex = 0;
+        let currentJournalEntries = [];
+        let currentLedgerEntries = {};
+        let progressData = [];
+        let startTime = null;
+
+        // 30 Soal Transaksi Perusahaan Jasa
+        const soalData = [
+            {
+                id: 1,
+                transaksi: "1 Januari 2024: Tn. Ahmad menyetorkan uang tunai sebesar Rp 50.000.000 sebagai modal awal untuk mendirikan CV. Maju Bersama.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Kas", debit: 50000000, kredit: 0 },
+                        { akun: "Modal Tn. Ahmad", debit: 0, kredit: 50000000 }
+                    ],
+                    bukuBesar: {
+                        "Kas": { debit: 50000000, kredit: 0, saldo: 50000000 },
+                        "Modal Tn. Ahmad": { debit: 0, kredit: 50000000, saldo: 50000000 }
+                    }
+                }
+            },
+            {
+                id: 2,
+                transaksi: "2 Januari 2024: Membeli peralatan kantor secara tunai seharga Rp 8.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Peralatan Kantor", debit: 8000000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 8000000 }
+                    ],
+                    bukuBesar: {
+                        "Peralatan Kantor": { debit: 8000000, kredit: 0, saldo: 8000000 },
+                        "Kas": { debit: 0, kredit: 8000000, saldo: -8000000 }
+                    }
+                }
+            },
+            {
+                id: 3,
+                transaksi: "3 Januari 2024: Membeli perlengkapan kantor secara kredit dari Toko ABC sebesar Rp 2.500.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Perlengkapan Kantor", debit: 2500000, kredit: 0 },
+                        { akun: "Utang Usaha", debit: 0, kredit: 2500000 }
+                    ],
+                    bukuBesar: {
+                        "Perlengkapan Kantor": { debit: 2500000, kredit: 0, saldo: 2500000 },
+                        "Utang Usaha": { debit: 0, kredit: 2500000, saldo: 2500000 }
+                    }
+                }
+            },
+            {
+                id: 4,
+                transaksi: "5 Januari 2024: Menerima pendapatan jasa konsultasi secara tunai sebesar Rp 5.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Kas", debit: 5000000, kredit: 0 },
+                        { akun: "Pendapatan Jasa", debit: 0, kredit: 5000000 }
+                    ],
+                    bukuBesar: {
+                        "Kas": { debit: 5000000, kredit: 0, saldo: 5000000 },
+                        "Pendapatan Jasa": { debit: 0, kredit: 5000000, saldo: 5000000 }
+                    }
+                }
+            },
+            {
+                id: 5,
+                transaksi: "7 Januari 2024: Membayar sewa kantor untuk 3 bulan sebesar Rp 6.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Sewa Dibayar Dimuka", debit: 6000000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 6000000 }
+                    ],
+                    bukuBesar: {
+                        "Sewa Dibayar Dimuka": { debit: 6000000, kredit: 0, saldo: 6000000 },
+                        "Kas": { debit: 0, kredit: 6000000, saldo: -6000000 }
+                    }
+                }
+            },
+            {
+                id: 6,
+                transaksi: "10 Januari 2024: Memberikan jasa konsultasi kepada PT. XYZ secara kredit sebesar Rp 7.500.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Piutang Usaha", debit: 7500000, kredit: 0 },
+                        { akun: "Pendapatan Jasa", debit: 0, kredit: 7500000 }
+                    ],
+                    bukuBesar: {
+                        "Piutang Usaha": { debit: 7500000, kredit: 0, saldo: 7500000 },
+                        "Pendapatan Jasa": { debit: 0, kredit: 7500000, saldo: 7500000 }
+                    }
+                }
+            },
+            {
+                id: 7,
+                transaksi: "12 Januari 2024: Membayar gaji karyawan untuk bulan Januari sebesar Rp 4.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Beban Gaji", debit: 4000000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 4000000 }
+                    ],
+                    bukuBesar: {
+                        "Beban Gaji": { debit: 4000000, kredit: 0, saldo: 4000000 },
+                        "Kas": { debit: 0, kredit: 4000000, saldo: -4000000 }
+                    }
+                }
+            },
+            {
+                id: 8,
+                transaksi: "15 Januari 2024: Menerima pembayaran dari PT. XYZ atas piutang sebesar Rp 3.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Kas", debit: 3000000, kredit: 0 },
+                        { akun: "Piutang Usaha", debit: 0, kredit: 3000000 }
+                    ],
+                    bukuBesar: {
+                        "Kas": { debit: 3000000, kredit: 0, saldo: 3000000 },
+                        "Piutang Usaha": { debit: 0, kredit: 3000000, saldo: -3000000 }
+                    }
+                }
+            },
+            {
+                id: 9,
+                transaksi: "18 Januari 2024: Membayar sebagian utang kepada Toko ABC sebesar Rp 1.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Utang Usaha", debit: 1000000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 1000000 }
+                    ],
+                    bukuBesar: {
+                        "Utang Usaha": { debit: 1000000, kredit: 0, saldo: -1000000 },
+                        "Kas": { debit: 0, kredit: 1000000, saldo: -1000000 }
+                    }
+                }
+            },
+            {
+                id: 10,
+                transaksi: "20 Januari 2024: Membayar beban listrik dan air sebesar Rp 800.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Beban Listrik dan Air", debit: 800000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 800000 }
+                    ],
+                    bukuBesar: {
+                        "Beban Listrik dan Air": { debit: 800000, kredit: 0, saldo: 800000 },
+                        "Kas": { debit: 0, kredit: 800000, saldo: -800000 }
+                    }
+                }
+            },
+            {
+                id: 11,
+                transaksi: "22 Januari 2024: Tn. Ahmad mengambil uang untuk keperluan pribadi sebesar Rp 2.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Prive Tn. Ahmad", debit: 2000000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 2000000 }
+                    ],
+                    bukuBesar: {
+                        "Prive Tn. Ahmad": { debit: 2000000, kredit: 0, saldo: 2000000 },
+                        "Kas": { debit: 0, kredit: 2000000, saldo: -2000000 }
+                    }
+                }
+            },
+            {
+                id: 12,
+                transaksi: "25 Januari 2024: Menerima pendapatan jasa pelatihan secara tunai sebesar Rp 3.500.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Kas", debit: 3500000, kredit: 0 },
+                        { akun: "Pendapatan Jasa", debit: 0, kredit: 3500000 }
+                    ],
+                    bukuBesar: {
+                        "Kas": { debit: 3500000, kredit: 0, saldo: 3500000 },
+                        "Pendapatan Jasa": { debit: 0, kredit: 3500000, saldo: 3500000 }
+                    }
+                }
+            },
+            {
+                id: 13,
+                transaksi: "27 Januari 2024: Membeli kendaraan operasional secara kredit seharga Rp 25.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Kendaraan", debit: 25000000, kredit: 0 },
+                        { akun: "Utang Bank", debit: 0, kredit: 25000000 }
+                    ],
+                    bukuBesar: {
+                        "Kendaraan": { debit: 25000000, kredit: 0, saldo: 25000000 },
+                        "Utang Bank": { debit: 0, kredit: 25000000, saldo: 25000000 }
+                    }
+                }
+            },
+            {
+                id: 14,
+                transaksi: "30 Januari 2024: Membayar beban telepon sebesar Rp 500.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Beban Telepon", debit: 500000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 500000 }
+                    ],
+                    bukuBesar: {
+                        "Beban Telepon": { debit: 500000, kredit: 0, saldo: 500000 },
+                        "Kas": { debit: 0, kredit: 500000, saldo: -500000 }
+                    }
+                }
+            },
+            {
+                id: 15,
+                transaksi: "1 Februari 2024: Menerima pendapatan jasa audit dari CV. DEF secara kredit sebesar Rp 12.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Piutang Usaha", debit: 12000000, kredit: 0 },
+                        { akun: "Pendapatan Jasa", debit: 0, kredit: 12000000 }
+                    ],
+                    bukuBesar: {
+                        "Piutang Usaha": { debit: 12000000, kredit: 0, saldo: 12000000 },
+                        "Pendapatan Jasa": { debit: 0, kredit: 12000000, saldo: 12000000 }
+                    }
+                }
+            },
+            {
+                id: 16,
+                transaksi: "3 Februari 2024: Membayar premi asuransi untuk 1 tahun sebesar Rp 2.400.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Asuransi Dibayar Dimuka", debit: 2400000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 2400000 }
+                    ],
+                    bukuBesar: {
+                        "Asuransi Dibayar Dimuka": { debit: 2400000, kredit: 0, saldo: 2400000 },
+                        "Kas": { debit: 0, kredit: 2400000, saldo: -2400000 }
+                    }
+                }
+            },
+            {
+                id: 17,
+                transaksi: "5 Februari 2024: Membayar beban iklan di media sosial sebesar Rp 1.200.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Beban Iklan", debit: 1200000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 1200000 }
+                    ],
+                    bukuBesar: {
+                        "Beban Iklan": { debit: 1200000, kredit: 0, saldo: 1200000 },
+                        "Kas": { debit: 0, kredit: 1200000, saldo: -1200000 }
+                    }
+                }
+            },
+            {
+                id: 18,
+                transaksi: "8 Februari 2024: Menerima pembayaran dari CV. DEF sebesar Rp 5.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Kas", debit: 5000000, kredit: 0 },
+                        { akun: "Piutang Usaha", debit: 0, kredit: 5000000 }
+                    ],
+                    bukuBesar: {
+                        "Kas": { debit: 5000000, kredit: 0, saldo: 5000000 },
+                        "Piutang Usaha": { debit: 0, kredit: 5000000, saldo: -5000000 }
+                    }
+                }
+            },
+            {
+                id: 19,
+                transaksi: "10 Februari 2024: Membeli komputer dan printer secara tunai seharga Rp 15.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Peralatan Kantor", debit: 15000000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 15000000 }
+                    ],
+                    bukuBesar: {
+                        "Peralatan Kantor": { debit: 15000000, kredit: 0, saldo: 15000000 },
+                        "Kas": { debit: 0, kredit: 15000000, saldo: -15000000 }
+                    }
+                }
+            },
+            {
+                id: 20,
+                transaksi: "12 Februari 2024: Membayar beban transportasi karyawan sebesar Rp 750.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Beban Transportasi", debit: 750000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 750000 }
+                    ],
+                    bukuBesar: {
+                        "Beban Transportasi": { debit: 750000, kredit: 0, saldo: 750000 },
+                        "Kas": { debit: 0, kredit: 750000, saldo: -750000 }
+                    }
+                }
+            },
+            {
+                id: 21,
+                transaksi: "15 Februari 2024: Menerima pendapatan jasa konsultasi pajak secara tunai sebesar Rp 4.500.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Kas", debit: 4500000, kredit: 0 },
+                        { akun: "Pendapatan Jasa", debit: 0, kredit: 4500000 }
+                    ],
+                    bukuBesar: {
+                        "Kas": { debit: 4500000, kredit: 0, saldo: 4500000 },
+                        "Pendapatan Jasa": { debit: 0, kredit: 4500000, saldo: 4500000 }
+                    }
+                }
+            },
+            {
+                id: 22,
+                transaksi: "18 Februari 2024: Membayar cicilan utang bank sebesar Rp 3.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Utang Bank", debit: 3000000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 3000000 }
+                    ],
+                    bukuBesar: {
+                        "Utang Bank": { debit: 3000000, kredit: 0, saldo: -3000000 },
+                        "Kas": { debit: 0, kredit: 3000000, saldo: -3000000 }
+                    }
+                }
+            },
+            {
+                id: 23,
+                transaksi: "20 Februari 2024: Membeli perlengkapan kantor tambahan secara tunai sebesar Rp 1.800.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Perlengkapan Kantor", debit: 1800000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 1800000 }
+                    ],
+                    bukuBesar: {
+                        "Perlengkapan Kantor": { debit: 1800000, kredit: 0, saldo: 1800000 },
+                        "Kas": { debit: 0, kredit: 1800000, saldo: -1800000 }
+                    }
+                }
+            },
+            {
+                id: 24,
+                transaksi: "22 Februari 2024: Menerima pendapatan jasa pelatihan dari PT. GHI secara kredit sebesar Rp 8.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Piutang Usaha", debit: 8000000, kredit: 0 },
+                        { akun: "Pendapatan Jasa", debit: 0, kredit: 8000000 }
+                    ],
+                    bukuBesar: {
+                        "Piutang Usaha": { debit: 8000000, kredit: 0, saldo: 8000000 },
+                        "Pendapatan Jasa": { debit: 0, kredit: 8000000, saldo: 8000000 }
+                    }
+                }
+            },
+            {
+                id: 25,
+                transaksi: "25 Februari 2024: Membayar beban pemeliharaan kendaraan sebesar Rp 1.500.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Beban Pemeliharaan", debit: 1500000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 1500000 }
+                    ],
+                    bukuBesar: {
+                        "Beban Pemeliharaan": { debit: 1500000, kredit: 0, saldo: 1500000 },
+                        "Kas": { debit: 0, kredit: 1500000, saldo: -1500000 }
+                    }
+                }
+            },
+            {
+                id: 26,
+                transaksi: "27 Februari 2024: Tn. Ahmad menambah modal berupa peralatan senilai Rp 10.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Peralatan Kantor", debit: 10000000, kredit: 0 },
+                        { akun: "Modal Tn. Ahmad", debit: 0, kredit: 10000000 }
+                    ],
+                    bukuBesar: {
+                        "Peralatan Kantor": { debit: 10000000, kredit: 0, saldo: 10000000 },
+                        "Modal Tn. Ahmad": { debit: 0, kredit: 10000000, saldo: 10000000 }
+                    }
+                }
+            },
+            {
+                id: 27,
+                transaksi: "28 Februari 2024: Membayar beban konsumsi rapat sebesar Rp 600.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Beban Konsumsi", debit: 600000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 600000 }
+                    ],
+                    bukuBesar: {
+                        "Beban Konsumsi": { debit: 600000, kredit: 0, saldo: 600000 },
+                        "Kas": { debit: 0, kredit: 600000, saldo: -600000 }
+                    }
+                }
+            },
+            {
+                id: 28,
+                transaksi: "1 Maret 2024: Menerima pembayaran dari PT. GHI sebesar Rp 4.000.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Kas", debit: 4000000, kredit: 0 },
+                        { akun: "Piutang Usaha", debit: 0, kredit: 4000000 }
+                    ],
+                    bukuBesar: {
+                        "Kas": { debit: 4000000, kredit: 0, saldo: 4000000 },
+                        "Piutang Usaha": { debit: 0, kredit: 4000000, saldo: -4000000 }
+                    }
+                }
+            },
+            {
+                id: 29,
+                transaksi: "3 Maret 2024: Membayar beban ATK (Alat Tulis Kantor) sebesar Rp 450.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Beban ATK", debit: 450000, kredit: 0 },
+                        { akun: "Kas", debit: 0, kredit: 450000 }
+                    ],
+                    bukuBesar: {
+                        "Beban ATK": { debit: 450000, kredit: 0, saldo: 450000 },
+                        "Kas": { debit: 0, kredit: 450000, saldo: -450000 }
+                    }
+                }
+            },
+            {
+                id: 30,
+                transaksi: "5 Maret 2024: Menerima pendapatan jasa konsultasi manajemen secara tunai sebesar Rp 6.500.000.",
+                jawaban: {
+                    jurnal: [
+                        { akun: "Kas", debit: 6500000, kredit: 0 },
+                        { akun: "Pendapatan Jasa", debit: 0, kredit: 6500000 }
+                    ],
+                    bukuBesar: {
+                        "Kas": { debit: 6500000, kredit: 0, saldo: 6500000 },
+                        "Pendapatan Jasa": { debit: 0, kredit: 6500000, saldo: 6500000 }
+                    }
+                }
+            }
+        ];
+
+        // Data SDK implementation
+        const dataHandler = {
+            onDataChanged(data) {
+                progressData = data;
+                updateProgressDisplay();
+                updateSoalGrid();
+            }
+        };
+
+        // Initialize Data SDK
+        async function initializeDataSdk() {
+            if (window.dataSdk) {
+                const result = await window.dataSdk.init(dataHandler);
+                if (!result.isOk) {
+                    console.error("Failed to initialize data SDK");
+                }
+            }
+        }
+
+        // Navigation functions
+        function showSection(sectionName) {
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            document.getElementById(sectionName + '-section').classList.add('fade-in');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-500', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-blue-500', 'text-white');
+
+            if (sectionName === 'progress') {
+                loadProgressData();
+            }
+        }
+
+        // Generate soal grid
+        function generateSoalGrid() {
+            const grid = document.getElementById('soal-grid');
+            grid.innerHTML = '';
+
+            soalData.forEach((soal, index) => {
+                const progress = progressData.find(p => p.soal_id === soal.id.toString());
+                const isCompleted = progress && progress.status === 'completed';
+                const score = progress ? progress.skor : 0;
+
+                const card = document.createElement('div');
+                card.className = `card-hover bg-white rounded-lg p-4 shadow-lg cursor-pointer border-2 ${isCompleted ? 'border-green-300 bg-green-50' : 'border-gray-200'}`;
+                card.onclick = () => startSoal(index);
+
+                card.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-2xl font-bold mb-2 ${isCompleted ? 'text-green-600' : 'text-gray-600'}">
+                            ${soal.id}
+                        </div>
+                        <div class="text-sm text-gray-500 mb-2">
+                            ${isCompleted ? '✅ Selesai' : '⏳ Belum'}
+                        </div>
+                        ${isCompleted ? `<div class="text-xs font-bold text-green-600">Skor: ${score}</div>` : ''}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Start soal
+        function startSoal(index) {
+            currentSoalIndex = index;
+            startTime = new Date();
+            showSection('latihan');
+            loadSoal();
+        }
+
+        // Load soal
+        function loadSoal() {
+            const soal = soalData[currentSoalIndex];
+            document.getElementById('current-soal-number').textContent = soal.id;
+            document.getElementById('soal-text').textContent = soal.transaksi;
+
+            // Reset form
+            currentJournalEntries = [];
+            currentLedgerEntries = {};
+            
+            // Generate initial journal entries
+            generateJournalEntries();
+            
+            // Hide sections
+            document.getElementById('ledger-section').style.display = 'none';
+            document.getElementById('result-section').classList.add('hidden');
+
+            // Update navigation buttons
+            document.getElementById('prev-soal-btn').disabled = currentSoalIndex === 0;
+            document.getElementById('next-soal-btn').style.display = currentSoalIndex === soalData.length - 1 ? 'none' : 'block';
+        }
+
+        // Generate journal entries
+        function generateJournalEntries() {
+            const tbody = document.getElementById('journal-entries');
+            tbody.innerHTML = '';
+
+            // Add initial empty rows (always start with 2 rows for proper journal format)
+            for (let i = 0; i < 2; i++) {
+                addJournalEntry();
+            }
+        }
+
+        // Add journal entry
+        function addJournalEntry() {
+            const tbody = document.getElementById('journal-entries');
+            const row = document.createElement('tr');
+            const entryIndex = currentJournalEntries.length;
+
+            // Determine if this is the first row or subsequent rows
+            const isFirstRow = entryIndex === 0;
+            const accountPlaceholder = isFirstRow ? "Akun yang di-Debit" : "    Akun yang di-Kredit";
+            const accountStyle = isFirstRow ? "" : "padding-left: 20px;";
+
+            row.innerHTML = `
+                <td><input type="date" class="w-full p-2 border rounded" value="2024-01-01" ${entryIndex > 0 ? 'readonly style="background-color: #f9fafb;"' : ''}></td>
+                <td><input type="text" class="w-full p-2 border rounded" placeholder="${accountPlaceholder}" style="${accountStyle}" onchange="updateJournalEntry(${entryIndex}, 'akun', this.value)"></td>
+                <td><input type="text" class="w-full p-2 border rounded" placeholder="Ref" value=""></td>
+                <td><input type="number" class="w-full p-2 border rounded debit-input" placeholder="0" onchange="updateJournalEntry(${entryIndex}, 'debit', this.value)"></td>
+                <td><input type="number" class="w-full p-2 border rounded credit-input" placeholder="0" onchange="updateJournalEntry(${entryIndex}, 'kredit', this.value)"></td>
+            `;
+
+            tbody.appendChild(row);
+            currentJournalEntries.push({ akun: '', debit: 0, kredit: 0 });
+        }
+
+        // Update journal entry
+        function updateJournalEntry(index, field, value) {
+            if (!currentJournalEntries[index]) {
+                currentJournalEntries[index] = { akun: '', debit: 0, kredit: 0 };
+            }
+
+            if (field === 'debit' || field === 'kredit') {
+                currentJournalEntries[index][field] = parseFloat(value) || 0;
+            } else {
+                currentJournalEntries[index][field] = value;
+            }
+        }
+
+        // Check journal
+        function checkJournal() {
+            const soal = soalData[currentSoalIndex];
+            const correctAnswers = soal.jawaban.jurnal;
+            
+            // Filter out empty entries
+            const userEntries = currentJournalEntries.filter(entry => 
+                entry.akun.trim() !== '' && (entry.debit > 0 || entry.kredit > 0)
+            );
+
+            let journalScore = 0;
+            const maxJournalScore = 50;
+
+            // Check if entries match
+            if (userEntries.length === correctAnswers.length) {
+                let correctCount = 0;
+                
+                correctAnswers.forEach(correct => {
+                    const userEntry = userEntries.find(entry => 
+                        entry.akun.toLowerCase().trim() === correct.akun.toLowerCase().trim() &&
+                        entry.debit === correct.debit &&
+                        entry.kredit === correct.kredit
+                    );
+                    
+                    if (userEntry) {
+                        correctCount++;
+                    }
+                });
+
+                journalScore = (correctCount / correctAnswers.length) * maxJournalScore;
+            }
+
+            // Update UI with results
+            highlightJournalAnswers(correctAnswers);
+            
+            // Show ledger section
+            document.getElementById('ledger-section').style.display = 'block';
+            generateLedgerAccounts(correctAnswers);
+            
+            // Update score display
+            document.getElementById('journal-score').textContent = Math.round(journalScore);
+            
+            return journalScore;
+        }
+
+        // Highlight journal answers
+        function highlightJournalAnswers(correctAnswers) {
+            const rows = document.querySelectorAll('#journal-entries tr');
+            
+            rows.forEach((row, index) => {
+                if (index < currentJournalEntries.length) {
+                    const entry = currentJournalEntries[index];
+                    const inputs = row.querySelectorAll('input');
+                    
+                    if (entry.akun.trim() !== '' && (entry.debit > 0 || entry.kredit > 0)) {
+                        const isCorrect = correctAnswers.some(correct => 
+                            entry.akun.toLowerCase().trim() === correct.akun.toLowerCase().trim() &&
+                            entry.debit === correct.debit &&
+                            entry.kredit === correct.kredit
+                        );
+                        
+                        inputs.forEach(input => {
+                            input.classList.remove('correct-answer', 'incorrect-answer');
+                            input.classList.add(isCorrect ? 'correct-answer' : 'incorrect-answer');
+                        });
+                    }
+                }
+            });
+        }
+
+        // Generate ledger accounts
+        function generateLedgerAccounts(journalEntries) {
+            const ledgerContainer = document.getElementById('ledger-accounts');
+            ledgerContainer.innerHTML = '';
+
+            // Get unique accounts
+            const accounts = [...new Set(journalEntries.map(entry => entry.akun))];
+
+            accounts.forEach(account => {
+                const accountDiv = document.createElement('div');
+                accountDiv.className = 'bg-gray-50 rounded-lg p-4';
+                
+                accountDiv.innerHTML = `
+                    <h4 class="font-bold text-lg mb-3 text-center">${account}</h4>
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-gray-200">
+                                <th class="border border-gray-300 p-2">Debit</th>
+                                <th class="border border-gray-300 p-2">Kredit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="number" class="w-full p-1 border rounded" placeholder="0" 
+                                           onchange="updateLedgerEntry('${account}', 'debit', this.value)">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="number" class="w-full p-1 border rounded" placeholder="0" 
+                                           onchange="updateLedgerEntry('${account}', 'kredit', this.value)">
+                                </td>
+                            </tr>
+                            <tr class="bg-blue-50">
+                                <td class="border border-gray-300 p-2 font-bold text-center" colspan="2">
+                                    Saldo: <span id="saldo-${account.replace(/\s+/g, '-')}">0</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+
+                ledgerContainer.appendChild(accountDiv);
+                
+                // Initialize ledger entry
+                currentLedgerEntries[account] = { debit: 0, kredit: 0, saldo: 0 };
+            });
+        }
+
+        // Update ledger entry
+        function updateLedgerEntry(account, type, value) {
+            if (!currentLedgerEntries[account]) {
+                currentLedgerEntries[account] = { debit: 0, kredit: 0, saldo: 0 };
+            }
+
+            currentLedgerEntries[account][type] = parseFloat(value) || 0;
+            
+            // Calculate balance
+            const debit = currentLedgerEntries[account].debit;
+            const kredit = currentLedgerEntries[account].kredit;
+            currentLedgerEntries[account].saldo = debit - kredit;
+            
+            // Update display
+            const saldoElement = document.getElementById(`saldo-${account.replace(/\s+/g, '-')}`);
+            if (saldoElement) {
+                saldoElement.textContent = currentLedgerEntries[account].saldo.toLocaleString('id-ID');
+            }
+        }
+
+        // Check ledger
+        function checkLedger() {
+            const soal = soalData[currentSoalIndex];
+            const correctLedger = soal.jawaban.bukuBesar;
+            
+            let ledgerScore = 0;
+            const maxLedgerScore = 50;
+            let correctCount = 0;
+            let totalAccounts = Object.keys(correctLedger).length;
+
+            Object.keys(correctLedger).forEach(account => {
+                const correct = correctLedger[account];
+                const user = currentLedgerEntries[account];
+                
+                if (user && user.debit === correct.debit && user.kredit === correct.kredit) {
+                    correctCount++;
+                }
+            });
+
+            ledgerScore = (correctCount / totalAccounts) * maxLedgerScore;
+            
+            // Update score display
+            document.getElementById('ledger-score').textContent = Math.round(ledgerScore);
+            
+            // Calculate total score
+            const journalScore = parseFloat(document.getElementById('journal-score').textContent) || 0;
+            const totalScore = journalScore + ledgerScore;
+            document.getElementById('total-score').textContent = Math.round(totalScore);
+            
+            // Show result section
+            document.getElementById('result-section').classList.remove('hidden');
+            
+            return ledgerScore;
+        }
+
+        // Save progress
+        async function saveProgress() {
+            if (!window.dataSdk) return;
+
+            // Check if we've reached the limit
+            if (progressData.length >= 999) {
+                showToast("Batas maksimum 999 data tercapai. Hapus beberapa data lama terlebih dahulu.", "error");
+                return;
+            }
+
+            const loadingIndicator = document.querySelector('.loading-indicator');
+            const saveButton = event.target;
+            
+            loadingIndicator.style.display = 'inline-block';
+            saveButton.disabled = true;
+
+            const journalScore = parseFloat(document.getElementById('journal-score').textContent) || 0;
+            const ledgerScore = parseFloat(document.getElementById('ledger-score').textContent) || 0;
+            const totalScore = journalScore + ledgerScore;
+            
+            const endTime = new Date();
+            const timeSpent = Math.round((endTime - startTime) / 1000 / 60); // minutes
+
+            const progressEntry = {
+                soal_id: soalData[currentSoalIndex].id.toString(),
+                jawaban_jurnal: JSON.stringify(currentJournalEntries),
+                jawaban_buku_besar: JSON.stringify(currentLedgerEntries),
+                skor: totalScore,
+                waktu_selesai: endTime.toISOString(),
+                status: 'completed'
+            };
+
+            const result = await window.dataSdk.create(progressEntry);
+            
+            loadingIndicator.style.display = 'none';
+            saveButton.disabled = false;
+
+            if (result.isOk) {
+                showToast("Progress berhasil disimpan!", "success");
+            } else {
+                showToast("Gagal menyimpan progress. Silakan coba lagi.", "error");
+            }
+        }
+
+        // Reset soal
+        function resetSoal() {
+            loadSoal();
+        }
+
+        // Navigation functions
+        function previousSoal() {
+            if (currentSoalIndex > 0) {
+                currentSoalIndex--;
+                loadSoal();
+            }
+        }
+
+        function nextSoal() {
+            if (currentSoalIndex < soalData.length - 1) {
+                currentSoalIndex++;
+                loadSoal();
+            }
+        }
+
+        // Update soal grid
+        function updateSoalGrid() {
+            generateSoalGrid();
+        }
+
+        // Update progress display
+        function updateProgressDisplay() {
+            const completedCount = progressData.filter(p => p.status === 'completed').length;
+            const averageScore = progressData.length > 0 ? 
+                progressData.reduce((sum, p) => sum + p.skor, 0) / progressData.length : 0;
+            
+            document.getElementById('completed-count').textContent = completedCount;
+            document.getElementById('average-score').textContent = Math.round(averageScore);
+            
+            // Calculate total time (placeholder)
+            document.getElementById('total-time').textContent = completedCount * 15; // Estimate 15 min per soal
+        }
+
+        // Load progress data
+        function loadProgressData() {
+            const tableBody = document.getElementById('progress-table');
+            tableBody.innerHTML = '';
+
+            soalData.forEach(soal => {
+                const progress = progressData.find(p => p.soal_id === soal.id.toString());
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td class="px-4 py-2">Soal ${soal.id}</td>
+                    <td class="px-4 py-2">
+                        <span class="px-2 py-1 rounded text-sm ${progress ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                            ${progress ? 'Selesai' : 'Belum'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-2">${progress ? Math.round(progress.skor) : '-'}</td>
+                    <td class="px-4 py-2">${progress ? '15 menit' : '-'}</td>
+                    <td class="px-4 py-2">
+                        <button onclick="startSoal(${soal.id - 1})" class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+                            ${progress ? 'Ulangi' : 'Mulai'}
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Show toast message
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            }`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Element SDK implementation
+        async function render(config) {
+            document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
+            document.getElementById('company-name').textContent = config.company_name || defaultConfig.company_name;
+            document.getElementById('footer-text').textContent = config.footer_text || defaultConfig.footer_text;
+            
+            // Apply colors
+            const primaryColor = config.primary_color || defaultConfig.primary_color;
+            const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+            
+            // Update primary colored elements
+            document.querySelectorAll('.bg-blue-500').forEach(el => {
+                el.style.backgroundColor = primaryColor;
+            });
+            
+            document.querySelectorAll('.text-blue-500, .text-blue-600').forEach(el => {
+                el.style.color = primaryColor;
+            });
+            
+            document.querySelectorAll('.border-blue-500').forEach(el => {
+                el.style.borderColor = primaryColor;
+            });
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || defaultConfig.primary_color,
+                        set: (value) => {
+                            config.primary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        }
+                    },
+                    {
+                        get: () => config.secondary_color || defaultConfig.secondary_color,
+                        set: (value) => {
+                            config.secondary_color = value;
+                            if (window.elementSdk) {
+                                window.elementSdk.setConfig({ secondary_color: value });
+                            }
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["app_title", config.app_title || defaultConfig.app_title],
+                ["company_name", config.company_name || defaultConfig.company_name],
+                ["footer_text", config.footer_text || defaultConfig.footer_text]
+            ]);
+        }
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initializeDataSdk();
+            generateSoalGrid();
+            updateProgressDisplay();
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a3060a4e76da8eb',t:'MTc2Mzg5Nzg3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
