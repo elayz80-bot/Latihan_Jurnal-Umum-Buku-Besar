@@ -156,11 +156,34 @@
        </div>
       </div><!-- Buku Besar -->
       <div class="mb-8" id="ledger-section" style="display: none;">
-       <h3 class="text-xl font-bold text-gray-800 mb-4">📚 Buku Besar</h3>
-       <div id="ledger-accounts" class="grid md:grid-cols-2 gap-6"><!-- Ledger accounts will be generated here -->
-       </div>
-       <div class="mt-4 text-center"><button onclick="checkLedger()" class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold"> Periksa Buku Besar </button>
-       </div>
+       <!-- Neraca Saldo -->
+<div class="mb-8 hidden" id="trialbalance-section">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">📄 Neraca Saldo</h3>
+
+    <div class="overflow-x-auto">
+        <table class="w-full border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border border-gray-300 p-2 w-48">Akun</th>
+                    <th class="border border-gray-300 p-2 w-20">Reff</th>
+                    <th class="border border-gray-300 p-2 w-32">Debit (Rp)</th>
+                    <th class="border border-gray-300 p-2 w-32">Kredit (Rp)</th>
+                </tr>
+            </thead>
+            <tbody id="trialbalance-entries">
+                <!-- Auto-generate rows -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-center">
+        <button onclick="checkTrialBalance()" 
+            class="px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 font-semibold">
+            Periksa Neraca Saldo
+        </button>
+    </div>
+</div>
+
       </div><!-- Hasil -->
       <div id="result-section" class="hidden">
        <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
@@ -923,7 +946,37 @@
             // Show ledger section
             document.getElementById('ledger-section').style.display = 'block';
             generateLedgerAccounts(correctAnswers);
-            
+            function generateTrialBalance(correctLedger) {
+    const tbSection = document.getElementById('trialbalance-section');
+    const tbody = document.getElementById('trialbalance-entries');
+
+    tbSection.classList.remove("hidden");
+    tbody.innerHTML = '';
+
+    Object.keys(correctLedger).forEach(account => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td class="border p-2">${account}</td>
+            <td class="border p-2">
+                <input type="text" class="w-full p-1 border rounded" placeholder="Ref">
+            </td>
+            <td class="border p-2">
+                <input type="number" class="w-full p-1 border rounded" placeholder="0"
+                    onchange="updateTrialBalance('${account}', 'debit', this.value)">
+            </td>
+            <td class="border p-2">
+                <input type="number" class="w-full p-1 border rounded" placeholder="0"
+                    onchange="updateTrialBalance('${account}', 'kredit', this.value)">
+            </td>
+        `;
+
+        tbody.appendChild(row);
+
+        currentTrialBalance[account] = { debit: 0, kredit: 0 };
+    });
+}
+
             // Update score display
             document.getElementById('journal-score').textContent = Math.round(journalScore);
             
@@ -1040,6 +1093,7 @@
                 if (user && user.debit === correct.debit && user.kredit === correct.kredit) {
                     correctCount++;
                 }
+				generateTrialBalance(soal.jawaban.bukuBesar);
             });
 
             ledgerScore = (correctCount / totalAccounts) * maxLedgerScore;
@@ -1262,5 +1316,35 @@
             updateProgressDisplay();
         });
     </script>
+	let currentTrialBalance = {};
+
+function updateTrialBalance(account, type, value) {
+    currentTrialBalance[account][type] = parseFloat(value) || 0;
+}
+
+function checkTrialBalance() {
+    const soal = soalData[currentSoalIndex];
+    const correctLedger = soal.jawaban.bukuBesar;
+
+    let score = 0;
+    const maxScore = 30;
+    let correctCount = 0;
+    const total = Object.keys(correctLedger).length;
+
+    Object.keys(correctLedger).forEach(account => {
+        const correct = correctLedger[account];
+        const user = currentTrialBalance[account];
+
+        if (user && correct.saldo === (user.debit - user.kredit)) {
+            correctCount++;
+        }
+    });
+
+    score = (correctCount / total) * maxScore;
+
+    alert("Skor Neraca Saldo: " + Math.round(score));
+    return score;
+}
+
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a3060a4e76da8eb',t:'MTc2Mzg5Nzg3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
